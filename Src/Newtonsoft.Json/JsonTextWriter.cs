@@ -620,7 +620,7 @@ namespace Newtonsoft.Json
                 if (this.DollarTag != null)
                 {
                     _writer.Write("$" + this.DollarTag + "$");
-                    _writer.Write(new string(_writeBuffer, 1, pos - 1));
+                    _writer.Write(new string(_writeBuffer, 1, pos - 2));
                     _writer.Write("$" + this.DollarTag + "$"); 
                 }
                 else
@@ -685,7 +685,7 @@ namespace Newtonsoft.Json
                 if (this.DollarTag != null)
                 {
                     _writer.Write("$" + this.DollarTag + "$");
-                    _writer.Write(new string(_writeBuffer, 1, pos - 1));
+                    _writer.Write(new string(_writeBuffer, 1, pos - 2));
                     _writer.Write("$" + this.DollarTag + "$"); 
                 }
                 else
