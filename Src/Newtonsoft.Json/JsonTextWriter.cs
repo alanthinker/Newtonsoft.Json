@@ -617,13 +617,31 @@ namespace Newtonsoft.Json
                 pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, value, null, value.Kind, DateFormatHandling);
                 _writeBuffer[pos++] = _quoteChar;
 
-                _writer.Write(_writeBuffer, 0, pos);
+                if (this.DollarTag != null)
+                {
+                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(new string(_writeBuffer, 1, pos - 1));
+                    _writer.Write("$" + this.DollarTag + "$"); 
+                }
+                else
+                {
+                    _writer.Write(_writeBuffer, 0, pos);
+                }
             }
             else
             {
-                _writer.Write(_quoteChar);
-                _writer.Write(value.ToString(DateFormatString, Culture));
-                _writer.Write(_quoteChar);
+                if (this.DollarTag != null)
+                {
+                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(value.ToString(DateFormatString, Culture));
+                    _writer.Write("$" + this.DollarTag + "$");
+                }
+                else
+                {
+                    _writer.Write(_quoteChar);
+                    _writer.Write(value.ToString(DateFormatString, Culture));
+                    _writer.Write(_quoteChar);
+                }
             }
         }
 
@@ -664,14 +682,31 @@ namespace Newtonsoft.Json
                 _writeBuffer[pos++] = _quoteChar;
                 pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, (DateFormatHandling == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, DateFormatHandling);
                 _writeBuffer[pos++] = _quoteChar;
-
-                _writer.Write(_writeBuffer, 0, pos);
+                if (this.DollarTag != null)
+                {
+                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(new string(_writeBuffer, 1, pos - 1));
+                    _writer.Write("$" + this.DollarTag + "$"); 
+                }
+                else
+                {
+                    _writer.Write(_writeBuffer, 0, pos);
+                }
             }
             else
             {
-                _writer.Write(_quoteChar);
-                _writer.Write(value.ToString(DateFormatString, Culture));
-                _writer.Write(_quoteChar);
+                if (this.DollarTag != null)
+                {
+                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(value.ToString(DateFormatString, Culture));
+                    _writer.Write("$" + this.DollarTag + "$");
+                }
+                else
+                {
+                    _writer.Write(_quoteChar);
+                    _writer.Write(value.ToString(DateFormatString, Culture));
+                    _writer.Write(_quoteChar);
+                }
             }
         }
 #endif
