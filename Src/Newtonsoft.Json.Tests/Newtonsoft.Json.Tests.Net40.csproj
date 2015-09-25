@@ -237,6 +237,7 @@
     <Compile Include="Documentation\ReadingAndWritingJsonTests.cs" />
     <Compile Include="Documentation\LinqToJsonTests.cs" />
     <Compile Include="Documentation\SerializationTests.cs" />
+    <Compile Include="DollarQuoteStringTest.cs" />
     <Compile Include="FileSystemEntityModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

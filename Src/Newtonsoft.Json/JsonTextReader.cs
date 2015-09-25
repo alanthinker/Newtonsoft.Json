@@ -439,18 +439,22 @@ namespace Newtonsoft.Json
         }
 
         private void ReadDollarStringIntoBuffer(char quote)
-        {
-            _charPos--;
+        { 
+            //_charPos--; //wrong, because _charPos may be 0.
 
             var currentPos = _charPos;
-            DlState _state = DlState.None;
+            DlState _state = DlState.FirstDollar;
 
             string tag = null;
             int firstDollarIndex = currentPos;
             int thirdDollarIndex = currentPos;
+
+            firstDollarIndex = currentPos - 1;
+
             while (true)
             {
                 char c = _chars[currentPos];
+                
                 switch (c)
                 {
                     case '\0':
@@ -520,7 +524,6 @@ namespace Newtonsoft.Json
                 currentPos++;
             }
         }
-
 
         private void ReadQuoteStringIntoBuffer(char quote)
         {
