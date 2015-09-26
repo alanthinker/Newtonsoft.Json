@@ -1,0 +1,60 @@
+﻿{
+  "Tasks": [
+    {
+      "$type": $$MyNotification.Notification, MyNotification$$,
+      "Message": $`0$早晨刷牙前必须先吃降压药. 确实服药后才可以关闭此窗口!健康三要素:
+    1. 控制饮食, 低盐, 低油, 低碳水化合物.$`$
+    2. 生命在于运动."sdf" 'asd' 循序渐进, 长期坚持.
+    3. 重视睡眠质量. 做到心无杂恋, 睡后不胡思乱想.
+    
+    Example:
+    {
+    "$type": "MyNotification.Notification, MyNotification",
+    "Message": $`$http://tianqianwow.stk.me/ 到期.$`$,
+    "IntervalSecondsForCheck": 60.0,
+    "Description": $`$$`$,
+    "Start": "2015-05-01T05:00:00+08:00",
+    "LastActiveTime": "2015-09-19T16:38:21.8261228+08:00",
+    "Interval": {
+    "XmlText": "1.00:00:00"
+    },
+    "OnlyInterval": false
+    },
+    
+    
+    $`0$,
+      "IntervalSecondsForCheck": 60.0,
+      "Description": $`$$`$,
+      "Start": $$0001-01-01T07:00:00$$,
+      "LastActiveTime": $$2011-09-23T15:41:03.8339155+08:00$$,
+      "Interval": {
+        "XmlText": $$1.00:00:00$$
+      },
+      "OnlyInterval": false
+    },
+    {
+      "$type": $$MyNotification.Notification, MyNotification$$,
+      "Message": $`$http://tianqianwow.stk.me/ 到期.$`$,
+      "IntervalSecondsForCheck": 60.0,
+      "Description": $`$$`$,
+      "Start": $$2015-05-01T05:00:00+08:00$$,
+      "LastActiveTime": $$2011-09-23T15:41:03.8329401+08:00$$,
+      "Interval": {
+        "XmlText": $$1.00:00:00$$
+      },
+      "OnlyInterval": false
+    },
+    {
+      "$type": $$MyNotification.CheckSleepTask, MyNotification$$,
+      "MaxNoActionMinutes": 30.0,
+      "IntervalSecondsForCheck": 10.0,
+      "Description": $`$用户若干分钟没有动鼠标或者键盘, 则强行睡眠. (windows自带的自动睡眠功能有时候无效.)$`$,
+      "Start": $$0001-01-01T05:00:00$$,
+      "LastActiveTime": $$2015-09-23T15:41:03.8329401+08:00$$,
+      "Interval": {
+        "XmlText": $$00:00:10$$
+      },
+      "OnlyInterval": false
+    }
+  ]
+}
