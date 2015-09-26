@@ -98,6 +98,32 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"Forest's Bakery And Cafe", jsonTextReader.Value);
         }
 
+
+        [Test]
+        public void ReadSomeDollarQuoteString()
+        {
+            {               
+                string str = "{``name``:`'`Tom`'`}";
+                dynamic d = JsonConvert.DeserializeObject(str);
+                Assert.AreEqual(d.name.Value, "Tom");
+            }
+            {
+                string str = "{``name``:`'`T`om`'`}";
+                dynamic d = JsonConvert.DeserializeObject(str);
+                Assert.AreEqual(d.name.Value, "T`om");
+            }
+            {
+                string str = "{``name``:`'`T``om`'`}";
+                dynamic d = JsonConvert.DeserializeObject(str);
+                Assert.AreEqual(d.name.Value, "T``om");
+            }
+            {
+                string str = "{``name``:`''`T`'`om`''`}";
+                dynamic d = JsonConvert.DeserializeObject(str);
+                Assert.AreEqual(d.name.Value, "T`'`om");
+            }
+        }
+
         [Test]
         public void WriteDollarQuoteJson()
         {
@@ -178,6 +204,38 @@ namespace Newtonsoft.Json.Tests
                     js.Serialize(jw, d);
                     var str = sb.ToString();
                     Assert.AreEqual(str, "{\"name\":$'$To$$``m$'$}");
+                }
+            }
+
+            {
+                dynamic d = new Json.Linq.JObject();
+                d.name = "To$'$`'`m";
+                JsonSerializer js = new JsonSerializer();
+                StringBuilder sb = new StringBuilder();
+                using (var stringW = new StringWriter(sb))
+                using (var jw = new JsonTextWriter(stringW))
+                {
+                    jw.DollarType = '$';
+                    jw.DollarTag = "";
+                    js.Serialize(jw, d);
+                    var str = sb.ToString();
+                    Assert.AreEqual(str, "{\"name\":$$To$'$`'`m$$}");
+                }
+            }
+
+            {
+                dynamic d = new Json.Linq.JObject();
+                d.name = "T$$o$'$`'`m";
+                JsonSerializer js = new JsonSerializer();
+                StringBuilder sb = new StringBuilder();
+                using (var stringW = new StringWriter(sb))
+                using (var jw = new JsonTextWriter(stringW))
+                {
+                    jw.DollarType = '$';
+                    jw.DollarTag = "";
+                    js.Serialize(jw, d);
+                    var str = sb.ToString();
+                    Assert.AreEqual(str, "{\"name\":$''$T$$o$'$`'`m$''$}");
                 }
             }
 
@@ -263,6 +321,36 @@ namespace Newtonsoft.Json.Tests
                     js.Serialize(jw, d);
                     var str = sb.ToString();
                     Assert.AreEqual(str, "{\"name\":`'`To``$$m`'`}");
+                }
+            }
+
+            {
+                dynamic d = new Json.Linq.JObject();
+                d.name = "To`'`$'$m";
+                JsonSerializer js = new JsonSerializer();
+                StringBuilder sb = new StringBuilder();
+                using (var stringW = new StringWriter(sb))
+                using (var jw = new JsonTextWriter(stringW))
+                {
+                    jw.DollarTag = "";
+                    js.Serialize(jw, d);
+                    var str = sb.ToString();
+                    Assert.AreEqual(str, "{\"name\":``To`'`$'$m``}");
+                }
+            }
+
+            {
+                dynamic d = new Json.Linq.JObject();
+                d.name = "T``o`'`$'$m";
+                JsonSerializer js = new JsonSerializer();
+                StringBuilder sb = new StringBuilder();
+                using (var stringW = new StringWriter(sb))
+                using (var jw = new JsonTextWriter(stringW))
+                {
+                    jw.DollarTag = "";
+                    js.Serialize(jw, d);
+                    var str = sb.ToString();
+                    Assert.AreEqual(str, "{\"name\":`''`T``o`'`$'$m`''`}");
                 }
             }
 
