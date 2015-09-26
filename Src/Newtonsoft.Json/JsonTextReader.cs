@@ -423,7 +423,7 @@ namespace Newtonsoft.Json
             {
                 ReadQuoteStringIntoBuffer(quote);
             }
-            else if (quote == '$')
+            else if (quote == '$' || quote == '`')
             {
                 ReadDollarStringIntoBuffer(quote);
             }
@@ -470,6 +470,13 @@ namespace Newtonsoft.Json
                         }
                         break;
                     case '$':
+                    case '`':
+                        if (c != quote)
+                        {
+                            currentPos++;
+                            continue;
+                        }
+
                         switch (_state)
                         {
                             case DlState.None:
@@ -939,7 +946,7 @@ namespace Newtonsoft.Json
             char firstChar = _chars[_charPos];
             char quoteChar;
 
-            if (firstChar == '"' || firstChar == '\'' || firstChar == '$')
+            if (firstChar == '"' || firstChar == '\'' || firstChar == '$' || firstChar == '`')
             {
                 _charPos++;
                 quoteChar = firstChar;
@@ -1055,6 +1062,7 @@ namespace Newtonsoft.Json
                     case '"':
                     case '\'':
                     case '$':
+                    case '`':
                         ParseString(currentChar);
                         return true;
                     case 't':

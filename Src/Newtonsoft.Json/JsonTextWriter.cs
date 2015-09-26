@@ -46,7 +46,9 @@ namespace Newtonsoft.Json
         private char _indentChar;
         private int _indentation;
         private char _quoteChar;
+        private char _dollarType = '`';//default ` 
         private string _dollarTag;
+        private string _tempDollarTag;
         private bool _quoteName;
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
@@ -95,22 +97,49 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// TempDollarTag
-        /// </summary>
-        public string TempDollarTag { get; set; }
+        /// DollarType
+        /// </summary>         
+        public char DollarType
+        {
+            get { return _dollarType; }
+            set
+            {
+                if (value != '$' && value != '`')
+                    throw new ArgumentException("DollarType can only be dollar: $ or grave accent: `");
+                if (_dollarTag != null && _dollarTag.Contains(_dollarType.ToString()))
+                    throw new ArgumentException(@"Invalid DollarTag or DollarType. Can't be same.");
+
+                _dollarType = value;
+            }
+        }
 
         /// <summary>
         /// DollarTag
-        /// </summary>         
+        /// </summary>
         public string DollarTag
         {
             get { return _dollarTag; }
             set
             {
-                if (value != null && value.Contains("$"))
-                    throw new ArgumentException(@"Invalid DollarTag. Can't contain $.");
+                if (value != null && value.Contains(_dollarType.ToString()))
+                    throw new ArgumentException(@"Invalid DollarTag or DollarType. Can't be same.");
 
                 _dollarTag = value;
+            }
+        }
+        
+        /// <summary>
+        /// TempDollarTag
+        /// </summary>
+        public string TempDollarTag
+        {
+            get { return _tempDollarTag; }
+            set
+            {
+                if (value != null && value.Contains(_dollarType.ToString()))
+                    throw new ArgumentException(@"Invalid DollarTag or DollarType. Can't be same.");
+
+                _tempDollarTag = value;
             }
         }
 
@@ -400,22 +429,45 @@ namespace Newtonsoft.Json
                 {
                     this.TempDollarTag = this.DollarTag;
                 }
-                var fullTag = "$" + this.TempDollarTag + "$";
-                int maxTry = 10;
-                for (int i = 0; i < maxTry; i++)
+                var fullTag = _dollarType + this.TempDollarTag + _dollarType;
+                if (this.TempDollarTag == "'" || this.TempDollarTag == "")
                 {
-                    if (!value.Contains(fullTag))
+                    int maxTry = 10;
+                    for (int i = 0; i < maxTry; i++)
                     {
-                        break;
-                    }
+                        if (!value.Contains(fullTag))
+                        {
+                            break;
+                        }
 
-                    if (i < maxTry - 1)
-                    {
-                        fullTag = "$" + this.TempDollarTag + i + "$";
+                        if (i < maxTry - 1)
+                        {
+                            fullTag = _dollarType + this.TempDollarTag + new String('\'', i + 1) + _dollarType;
+                        }
+                        else
+                        {
+                            fullTag = _dollarType + Guid.NewGuid().ToString("N") + _dollarType;
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    int maxTry = 10;
+                    for (int i = 0; i < maxTry; i++)
                     {
-                        fullTag = "$" + Guid.NewGuid().ToString("N") + "$";
+                        if (!value.Contains(fullTag))
+                        {
+                            break;
+                        }
+
+                        if (i < maxTry - 1)
+                        {
+                            fullTag = _dollarType + this.TempDollarTag + i + _dollarType;
+                        }
+                        else
+                        {
+                            fullTag = _dollarType + Guid.NewGuid().ToString("N") + _dollarType;
+                        }
                     }
                 }
                 _writer.Write(fullTag + value + fullTag);
@@ -619,9 +671,9 @@ namespace Newtonsoft.Json
 
                 if (this.DollarTag != null)
                 {
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                     _writer.Write(new string(_writeBuffer, 1, pos - 2));
-                    _writer.Write("$" + this.DollarTag + "$"); 
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                 }
                 else
                 {
@@ -632,9 +684,9 @@ namespace Newtonsoft.Json
             {
                 if (this.DollarTag != null)
                 {
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                     _writer.Write(value.ToString(DateFormatString, Culture));
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                 }
                 else
                 {
@@ -684,9 +736,9 @@ namespace Newtonsoft.Json
                 _writeBuffer[pos++] = _quoteChar;
                 if (this.DollarTag != null)
                 {
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                     _writer.Write(new string(_writeBuffer, 1, pos - 2));
-                    _writer.Write("$" + this.DollarTag + "$"); 
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                 }
                 else
                 {
@@ -697,9 +749,9 @@ namespace Newtonsoft.Json
             {
                 if (this.DollarTag != null)
                 {
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                     _writer.Write(value.ToString(DateFormatString, Culture));
-                    _writer.Write("$" + this.DollarTag + "$");
+                    _writer.Write(_dollarType + this.DollarTag + _dollarType);
                 }
                 else
                 {
