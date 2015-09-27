@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Schema;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -18,6 +20,45 @@ namespace Newtonsoft.Json.Tests
 {
     public class DollarQuoteStringTest
     {
+        [Test]
+        public void DoNotIndentPrimitiveArray()
+        {
+            dynamic d = new JObject();
+            d.name = "T'om";
+            d.items = new JArray(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            d.items2 = new JArray("a", "bc",
+                new JObject() { new JProperty("aa", "bb"), new JProperty("aa2", "bb"), new JProperty("aa3", "bb") },
+                "def");
+
+            JsonSerializer js = new JsonSerializer();
+            StringBuilder sb = new StringBuilder();
+            using (var stringW = new StringWriter(sb))
+            using (var jw = new JsonTextWriter(stringW))
+            {
+                jw.DollarTag = "";
+                jw.Formatting = Formatting.Indented;
+                jw.IsIndentPrimitiveArray = false;
+                js.Serialize(jw, d);
+                var str = sb.ToString().Replace(Environment.NewLine, "\n");
+                var expected = @"{
+  ""name"": ``T'om``,
+  ""items"": [
+    1,2,3,4,5,6,7,8,9
+  ],
+  ""items2"": [
+    ``a``,``bc``,
+    {
+      ""aa"": ``bb``,
+      ""aa2"": ``bb``,
+      ""aa3"": ``bb``
+    },
+    ``def``
+  ]
+}".Replace(Environment.NewLine,"\n");
+                Assert.AreEqual(expected, str);
+            }
+        }
+
         [Test]
         public void ReadDollarQuoteString()
         {
@@ -102,25 +143,25 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void ReadSomeDollarQuoteString()
         {
-            {               
+            {
                 string str = "{``name``:`'`Tom`'`}";
                 dynamic d = JsonConvert.DeserializeObject(str);
-                Assert.AreEqual(d.name.Value, "Tom");
+                Assert.AreEqual("Tom", d.name.Value);
             }
             {
                 string str = "{``name``:`'`T`om`'`}";
                 dynamic d = JsonConvert.DeserializeObject(str);
-                Assert.AreEqual(d.name.Value, "T`om");
+                Assert.AreEqual("T`om", d.name.Value);
             }
             {
                 string str = "{``name``:`'`T``om`'`}";
                 dynamic d = JsonConvert.DeserializeObject(str);
-                Assert.AreEqual(d.name.Value, "T``om");
+                Assert.AreEqual("T``om", d.name.Value);
             }
             {
                 string str = "{``name``:`''`T`'`om`''`}";
                 dynamic d = JsonConvert.DeserializeObject(str);
-                Assert.AreEqual(d.name.Value, "T`'`om");
+                Assert.AreEqual("T`'`om", d.name.Value);
             }
         }
 
@@ -139,7 +180,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$$T'om$$}");
+                    Assert.AreEqual("{\"name\":$$T'om$$}", str);
                 }
             }
 
@@ -155,7 +196,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$$T\"om$$}");
+                    Assert.AreEqual("{\"name\":$$T\"om$$}", str);
                 }
             }
 
@@ -171,7 +212,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$$To$m$$}");
+                    Assert.AreEqual("{\"name\":$$To$m$$}", str);
                 }
             }
 
@@ -187,7 +228,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$'$To$$m$'$}");
+                    Assert.AreEqual("{\"name\":$'$To$$m$'$}", str);
                 }
             }
 
@@ -203,7 +244,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$'$To$$``m$'$}");
+                    Assert.AreEqual("{\"name\":$'$To$$``m$'$}", str);
                 }
             }
 
@@ -219,7 +260,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$$To$'$`'`m$$}");
+                    Assert.AreEqual("{\"name\":$$To$'$`'`m$$}", str);
                 }
             }
 
@@ -235,7 +276,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":$''$T$$o$'$`'`m$''$}");
+                    Assert.AreEqual("{\"name\":$''$T$$o$'$`'`m$''$}", str);
                 }
             }
 
@@ -253,7 +294,7 @@ namespace Newtonsoft.Json.Tests
                         jw.DollarTag = "$";
                         js.Serialize(jw, d);
                         var str = sb.ToString();
-                        Assert.AreEqual(str, "{\"name\":`'`To``$$m`'`}");
+                        Assert.AreEqual("{\"name\":`'`To``$$m`'`}", str);
                     }
                 }
                 , "Invalid DollarTag or DollarType. Can't be same.");
@@ -275,7 +316,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":``T'om``}");
+                    Assert.AreEqual("{\"name\":``T'om``}", str);
                 }
             }
 
@@ -290,7 +331,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":``T\"om``}");
+                    Assert.AreEqual("{\"name\":``T\"om``}", str);
                 }
             }
 
@@ -305,7 +346,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":``To`m``}");
+                    Assert.AreEqual( "{\"name\":``To`m``}", str);
                 }
             }
 
@@ -320,7 +361,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":`'`To``$$m`'`}");
+                    Assert.AreEqual("{\"name\":`'`To``$$m`'`}", str);
                 }
             }
 
@@ -335,7 +376,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":``To`'`$'$m``}");
+                    Assert.AreEqual("{\"name\":``To`'`$'$m``}", str);
                 }
             }
 
@@ -350,7 +391,7 @@ namespace Newtonsoft.Json.Tests
                     jw.DollarTag = "";
                     js.Serialize(jw, d);
                     var str = sb.ToString();
-                    Assert.AreEqual(str, "{\"name\":`''`T``o`'`$'$m`''`}");
+                    Assert.AreEqual("{\"name\":`''`T``o`'`$'$m`''`}", str);
                 }
             }
 
@@ -367,16 +408,16 @@ namespace Newtonsoft.Json.Tests
                         jw.DollarTag = "`";
                         js.Serialize(jw, d);
                         var str = sb.ToString();
-                        Assert.AreEqual(str, "{\"name\":`'`To``$$m`'`}");
+                        Assert.AreEqual("{\"name\":`'`To``$$m`'`}", str);
                     }
                 }
                 , "Invalid DollarTag or DollarType. Can't be same.");
             }
-        }        
+        }
 
         [Test]
         public void ReadAndWriteDollarQuoteJson()
-        { 
+        {
 
             dynamic d;
             using (var jsonFile = System.IO.File.OpenText("myTest.pjson"))
@@ -399,7 +440,7 @@ namespace Newtonsoft.Json.Tests
                 jw.Formatting = Formatting.Indented;//格式化, 换行并缩进.
                 jw.DollarTag = "'";
                 js.Serialize(jw, d);
-            } 
+            }
 
             //读取刚才的文件.
             using (var jsonFile = System.IO.File.OpenText("myTest2.pjson"))
@@ -425,7 +466,7 @@ namespace Newtonsoft.Json.Tests
             }
 
             //按照特定格式输出json文件.
-            JsonSerializer js = new JsonSerializer();           
+            JsonSerializer js = new JsonSerializer();
             using (var fileWriter = new StreamWriter("large.pjson"))
             using (JsonTextWriter jw = new JsonTextWriter(fileWriter))
             {
@@ -433,7 +474,7 @@ namespace Newtonsoft.Json.Tests
                 jw.Formatting = Formatting.Indented;//格式化, 换行并缩进.
                 jw.DollarTag = "";
                 js.Serialize(jw, d);
-            } 
+            }
 
             //读取刚才的文件.
             using (var jsonFile = System.IO.File.OpenText("large.pjson"))

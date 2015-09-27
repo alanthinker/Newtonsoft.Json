@@ -49,7 +49,7 @@ namespace Newtonsoft.Json
         private char _dollarType = '`';//default ` 
         private string _dollarTag;
         private string _tempDollarTag;
-        private bool _quoteName;
+        private bool _quoteName;        
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
         private char[] _indentChars;
@@ -891,5 +891,26 @@ namespace Newtonsoft.Json
                 _writer.Write(_writeBuffer, 0, length);
             }
         }
+
+#if DEBUG
+        /// <summary>
+        /// IsWriteDebugInfo
+        /// </summary>
+        public bool IsWriteDebugInfo { get; set; }
+
+        /// <summary>
+        /// WriteDebugInfo
+        /// </summary>
+        /// <param name="info"></param>
+        internal override void WriteDebugInfo(string info)
+        {
+            if (IsWriteDebugInfo)
+            {
+                _writer.Write("/*");
+                _writer.Write(info);
+                _writer.Write("*/");
+            }
+        }
+#endif
     }
 }

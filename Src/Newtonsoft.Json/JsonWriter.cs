@@ -116,7 +116,9 @@ namespace Newtonsoft.Json
         private readonly List<JsonPosition> _stack;
         private JsonPosition _currentPosition;
         private State _currentState;
+        private State _lastStateForWriteIndent;
         private Formatting _formatting;
+        private bool _isIndentPrimitiveArray = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the underlying stream or
@@ -223,6 +225,15 @@ namespace Newtonsoft.Json
         {
             get { return _formatting; }
             set { _formatting = value; }
+        }
+
+        /// <summary>
+        /// IsIndentPrimitiveArray
+        /// </summary>
+        public bool IsIndentPrimitiveArray
+        {
+            get { return _isIndentPrimitiveArray; }
+            set { _isIndentPrimitiveArray = value; }
         }
 
         /// <summary>
@@ -686,6 +697,10 @@ namespace Newtonsoft.Json
             {
                 JsonToken token = GetCloseTokenForType(Pop());
 
+#if DEBUG
+                WriteDebugInfo(_currentState.ToString() + "--token:" + token.ToString());
+#endif
+
                 if (_currentState == State.Property)
                     WriteNull();
 
@@ -763,15 +778,43 @@ namespace Newtonsoft.Json
 
             if (_formatting == Formatting.Indented)
             {
+#if DEBUG
+                WriteDebugInfo(_currentState.ToString() + "->" + newState.ToString() + "--token:" + tokenBeingWritten);
+#endif
+
                 if (_currentState == State.Property)
                     WriteIndentSpace();
 
                 // don't indent a property when it is the first token to be written (i.e. at the start)
                 if ((_currentState == State.Array || _currentState == State.ArrayStart || _currentState == State.Constructor || _currentState == State.ConstructorStart)
                     || (tokenBeingWritten == JsonToken.PropertyName && _currentState != State.Start))
-                    WriteIndent();
-            }
+                {
+                    if (_isIndentPrimitiveArray)
+                    {
+                        WriteIndent();
+                    }
+                    else
+                    {
+                        if (_currentState == State.Array)
+                        {
+                            if (_lastStateForWriteIndent != State.Array && _lastStateForWriteIndent != State.ArrayStart
+                                    || newState != State.Array
+                               )
+                            {
+                                {
+                                    WriteIndent();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            WriteIndent();
+                        }
+                    }
+                }
 
+            }
+            _lastStateForWriteIndent = _currentState;
             _currentState = newState;
         }
 
@@ -1528,5 +1571,12 @@ namespace Newtonsoft.Json
         {
             AutoComplete(JsonToken.Comment);
         }
+
+#if DEBUG
+        internal virtual void WriteDebugInfo(string info)
+        {
+        }
+#endif
+
     }
 }
