@@ -801,9 +801,11 @@ namespace Newtonsoft.Json
                                     || newState != State.Array
                                )
                             {
-                                {
-                                    WriteIndent();
-                                }
+                                WriteIndent();
+                            }
+                            else
+                            {
+                                WriteIndentSpace();
                             }
                         }
                         else

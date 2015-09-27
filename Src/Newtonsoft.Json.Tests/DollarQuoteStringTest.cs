@@ -43,10 +43,10 @@ namespace Newtonsoft.Json.Tests
                 var expected = @"{
   ""name"": ``T'om``,
   ""items"": [
-    1,2,3,4,5,6,7,8,9
+    1, 2, 3, 4, 5, 6, 7, 8, 9
   ],
   ""items2"": [
-    ``a``,``bc``,
+    ``a``, ``bc``,
     {
       ""aa"": ``bb``,
       ""aa2"": ``bb``,
