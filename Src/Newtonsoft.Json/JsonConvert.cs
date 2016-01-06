@@ -646,6 +646,51 @@ namespace Newtonsoft.Json
             return sw.ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// Code:
+        ///    StringBuilder sb = new StringBuilder();
+        ///    StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
+        ///    using (JsonTextWriter jw = new JsonTextWriter(sw))
+        ///    {
+        ///        JsonSerializer js = new JsonSerializer();
+        ///        js.TypeNameHandling = TypeNameHandling.Auto;
+        ///        //用 JsonTextWriter 可以指定是否输出key的双引号. 或者使用单引号等其他字符.
+        ///        //jw.QuoteName = false;//输出时不用双引号.
+        ///        //jw.QuoteChar = '\''; //使用单引号后, 内容中的双引号就不用转义了.
+        ///        jw.DollarTag = "";
+        ///        jw.Formatting = Formatting.Indented;//格式化, 换行并缩进.
+        ///        jw.IsIndentPrimitiveArray = false; //原始数组的各个元素不换行缩进.
+        ///        js.Serialize(jw, value);
+        ///    }
+        ///
+        ///    return sb.ToString();
+        ///    
+        /// </remarks>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string SerializeObjectByAlan(object value)
+        {  
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
+            using (JsonTextWriter jw = new JsonTextWriter(sw))
+            {
+                JsonSerializer js = new JsonSerializer();
+                js.TypeNameHandling = TypeNameHandling.Auto;
+                //用 JsonTextWriter 可以指定是否输出key的双引号. 或者使用单引号等其他字符.
+                //jw.QuoteName = false;//输出时不用双引号.
+                //jw.QuoteChar = '\''; //使用单引号后, 内容中的双引号就不用转义了.
+                jw.DollarTag = "";
+                jw.Formatting = Formatting.Indented;//格式化, 换行并缩进.
+                jw.IsIndentPrimitiveArray = false; //原始数组的各个元素不换行缩进.
+                js.Serialize(jw, value);
+            }
+
+            return sb.ToString();
+        }
+
 #if !(NET20 || NET35 || PORTABLE40)
         /// <summary>
         /// Asynchronously serializes the specified object to a JSON string.

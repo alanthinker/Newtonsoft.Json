@@ -448,6 +448,8 @@ namespace Newtonsoft.Json.Tests
             {
                 JsonSerializer serializer = new JsonSerializer();
                 d = serializer.Deserialize(jsonTextReader);
+                d.Tasks[2].LastActiveTime = DateTime.Parse("2015-09-23T15:41:03.8329401+08:00");
+                d.Tasks[2].Description = "用户若干分钟没有动鼠标或者键盘, 则强行睡眠. (windows自带的自动睡眠功能有时候无效.)";
             }
         }
 

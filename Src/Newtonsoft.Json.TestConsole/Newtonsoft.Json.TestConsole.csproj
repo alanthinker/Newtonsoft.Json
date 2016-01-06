@@ -52,10 +52,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj">
-      <Project>{ccd1b8c4-7349-409c-a090-a9b9a1abd981}</Project>
-      <Name>Newtonsoft.Json.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{eeea67f9-9089-481d-a4dc-0966dec9fd7d}</Project>
       <Name>Newtonsoft.Json</Name>
