@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests
 
     [TestFixture]
     public class PerformanceTests : TestFixtureBase
-    {
+    { 
         public int Iterations = 100;
         //private const int Iterations = 5000;
 
@@ -668,111 +668,111 @@ If attributes are not mentioned, default values are used in each case.
                     json = JsonConvert.SerializeObject(value, new IsoDateTimeConverter());
                     break;
                 case SerializeMethod.JsonNetLinq:
-                {
-                    TestClass c = value as TestClass;
-                    if (c != null)
                     {
-                        JObject o = new JObject(
-                            new JProperty("strings", new JArray(
-                                c.strings
-                                )),
-                            new JProperty("dictionary", new JObject(c.dictionary.Select(d => new JProperty(d.Key, d.Value)))),
-                            new JProperty("Name", c.Name),
-                            new JProperty("Now", c.Now),
-                            new JProperty("BigNumber", c.BigNumber),
-                            new JProperty("Address1", new JObject(
-                                new JProperty("Street", c.Address1.Street),
-                                new JProperty("Phone", c.Address1.Phone),
-                                new JProperty("Entered", c.Address1.Entered))),
-                            new JProperty("Addresses", new JArray(c.Addresses.Select(a =>
-                                new JObject(
-                                    new JProperty("Street", a.Street),
-                                    new JProperty("Phone", a.Phone),
-                                    new JProperty("Entered", a.Entered)))))
-                            );
+                        TestClass c = value as TestClass;
+                        if (c != null)
+                        {
+                            JObject o = new JObject(
+                                new JProperty("strings", new JArray(
+                                    c.strings
+                                    )),
+                                new JProperty("dictionary", new JObject(c.dictionary.Select(d => new JProperty(d.Key, d.Value)))),
+                                new JProperty("Name", c.Name),
+                                new JProperty("Now", c.Now),
+                                new JProperty("BigNumber", c.BigNumber),
+                                new JProperty("Address1", new JObject(
+                                    new JProperty("Street", c.Address1.Street),
+                                    new JProperty("Phone", c.Address1.Phone),
+                                    new JProperty("Entered", c.Address1.Entered))),
+                                new JProperty("Addresses", new JArray(c.Addresses.Select(a =>
+                                    new JObject(
+                                        new JProperty("Street", a.Street),
+                                        new JProperty("Phone", a.Phone),
+                                        new JProperty("Entered", a.Entered)))))
+                                );
 
-                        json = o.ToString(Formatting.None);
+                            json = o.ToString(Formatting.None);
+                        }
+                        else
+                        {
+                            json = string.Empty;
+                        }
+                        break;
                     }
-                    else
-                    {
-                        json = string.Empty;
-                    }
-                    break;
-                }
                 case SerializeMethod.JsonNetManual:
-                {
-                    TestClass c = value as TestClass;
-                    if (c != null)
                     {
-                        StringWriter sw = new StringWriter();
-                        JsonTextWriter writer = new JsonTextWriter(sw);
-                        writer.WriteStartObject();
-                        writer.WritePropertyName("strings");
-                        writer.WriteStartArray();
-                        foreach (string s in c.strings)
+                        TestClass c = value as TestClass;
+                        if (c != null)
                         {
-                            writer.WriteValue(s);
-                        }
-                        writer.WriteEndArray();
-                        writer.WritePropertyName("dictionary");
-                        writer.WriteStartObject();
-                        foreach (KeyValuePair<string, int> keyValuePair in c.dictionary)
-                        {
-                            writer.WritePropertyName(keyValuePair.Key);
-                            writer.WriteValue(keyValuePair.Value);
-                        }
-                        writer.WriteEndObject();
-                        writer.WritePropertyName("Name");
-                        writer.WriteValue(c.Name);
-                        writer.WritePropertyName("Now");
-                        writer.WriteValue(c.Now);
-                        writer.WritePropertyName("BigNumber");
-                        writer.WriteValue(c.BigNumber);
-                        writer.WritePropertyName("Address1");
-                        writer.WriteStartObject();
-                        writer.WritePropertyName("Street");
-                        writer.WriteValue(c.BigNumber);
-                        writer.WritePropertyName("Street");
-                        writer.WriteValue(c.BigNumber);
-                        writer.WritePropertyName("Street");
-                        writer.WriteValue(c.BigNumber);
-                        writer.WriteEndObject();
-                        writer.WritePropertyName("Addresses");
-                        writer.WriteStartArray();
-                        foreach (Address address in c.Addresses)
-                        {
+                            StringWriter sw = new StringWriter();
+                            JsonTextWriter writer = new JsonTextWriter(sw);
+                            writer.WriteStartObject();
+                            writer.WritePropertyName("strings");
+                            writer.WriteStartArray();
+                            foreach (string s in c.strings)
+                            {
+                                writer.WriteValue(s);
+                            }
+                            writer.WriteEndArray();
+                            writer.WritePropertyName("dictionary");
+                            writer.WriteStartObject();
+                            foreach (KeyValuePair<string, int> keyValuePair in c.dictionary)
+                            {
+                                writer.WritePropertyName(keyValuePair.Key);
+                                writer.WriteValue(keyValuePair.Value);
+                            }
+                            writer.WriteEndObject();
+                            writer.WritePropertyName("Name");
+                            writer.WriteValue(c.Name);
+                            writer.WritePropertyName("Now");
+                            writer.WriteValue(c.Now);
+                            writer.WritePropertyName("BigNumber");
+                            writer.WriteValue(c.BigNumber);
+                            writer.WritePropertyName("Address1");
                             writer.WriteStartObject();
                             writer.WritePropertyName("Street");
-                            writer.WriteValue(address.Street);
-                            writer.WritePropertyName("Phone");
-                            writer.WriteValue(address.Phone);
-                            writer.WritePropertyName("Entered");
-                            writer.WriteValue(address.Entered);
+                            writer.WriteValue(c.BigNumber);
+                            writer.WritePropertyName("Street");
+                            writer.WriteValue(c.BigNumber);
+                            writer.WritePropertyName("Street");
+                            writer.WriteValue(c.BigNumber);
                             writer.WriteEndObject();
+                            writer.WritePropertyName("Addresses");
+                            writer.WriteStartArray();
+                            foreach (Address address in c.Addresses)
+                            {
+                                writer.WriteStartObject();
+                                writer.WritePropertyName("Street");
+                                writer.WriteValue(address.Street);
+                                writer.WritePropertyName("Phone");
+                                writer.WriteValue(address.Phone);
+                                writer.WritePropertyName("Entered");
+                                writer.WriteValue(address.Entered);
+                                writer.WriteEndObject();
+                            }
+                            writer.WriteEndArray();
+                            writer.WriteEndObject();
+
+                            writer.Flush();
+                            json = sw.ToString();
                         }
-                        writer.WriteEndArray();
-                        writer.WriteEndObject();
-
-                        writer.Flush();
-                        json = sw.ToString();
+                        else
+                        {
+                            json = string.Empty;
+                        }
+                        break;
                     }
-                    else
-                    {
-                        json = string.Empty;
-                    }
-                    break;
-                }
                 case SerializeMethod.JsonNetBinary:
-                {
-                    MemoryStream ms = new MemoryStream(Buffer);
-                    JsonSerializer serializer = new JsonSerializer();
-                    BsonWriter writer = new BsonWriter(ms);
-                    serializer.Serialize(writer, value);
+                    {
+                        MemoryStream ms = new MemoryStream(Buffer);
+                        JsonSerializer serializer = new JsonSerializer();
+                        BsonWriter writer = new BsonWriter(ms);
+                        serializer.Serialize(writer, value);
 
-                    //json = BitConverter.ToString(ms.ToArray(), 0, (int)ms.Position);
-                    json = "Bytes = " + ms.Position;
-                    break;
-                }
+                        //json = BitConverter.ToString(ms.ToArray(), 0, (int)ms.Position);
+                        json = "Bytes = " + ms.Position;
+                        break;
+                    }
                 case SerializeMethod.JavaScriptSerializer:
                     json = SerializeWebExtensions(value);
                     break;

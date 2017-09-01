@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || NETFX_CORE || PORTABLE40 || Test_NETSTANDARD2_0)
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -53,6 +53,7 @@ namespace Newtonsoft.Json.Tests.Utilities
     [TestFixture]
     public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
     {
+ 
         [Test]
         public void ConstructorWithRefString()
         {
@@ -65,6 +66,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.IsNotNull(o);
             Assert.AreEqual("Input", o.Input);
         }
+
 
         [Test]
         public void ConstructorWithRefStringAndOutBool()
@@ -178,3 +180,4 @@ namespace Newtonsoft.Json.Tests.Utilities
 }
 
 #endif
+ 
